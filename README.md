@@ -12,73 +12,44 @@
 <section id="calendar" class="hidden"><h2>Training calendar.</h2><p>Your fixed program runs October 12 through December 18. Pick any date in that range to view or edit the session.</p><div class="card"><label>Training month</label><input id="monthPicker" type="month"><div class="row" style="margin-top:10px"><button onclick="shiftMonth(-1)">< Previous</button><button onclick="shiftMonth(1)">Next ></button></div></div><div class="card"><div class="row"><div><h3 id="monthTitle">MONTH</h3><div class="sub" id="phaseText"></div></div></div><div class="day-list" id="days"></div></div><div class="card"><h3>PROGRAM PHASE</h3><div id="monthFocus"></div><p class="sub">This program stays fixed through December 18. The calendar will not automatically replace your plan every month. Open Throwing for the separate arm-build and velo progression.</p></div></section>
 <section id="throwingprogram" class="hidden">
 <h2>Throwing development.</h2>
-<p>October builds a repeatable throwing base. November and December shift toward velo development, pulldown tracking, plyo-ball work, and bullpen velo days.</p>
-<div class="notice">You are cleared to throw, but because you have a labrum-injury history, use this as a planning template with your throwing coach/PT. Keep every session inside your approved volume, distance, and intensity. Do not add extra throws to make up a missed day. Stop for pain, instability, unusual soreness, or a change in mechanics and contact your clinician.</div>
+<p><strong>Weekly schedule: throw Monday through Saturday; Sunday is your full throwing day off.</strong> Every throwing day below includes a target distance and effort. The plan progresses from easy catch toward coach-supervised velo and bullpen work.</p>
+<div class="notice">You said you are cleared to throw every day except Sunday. This schedule follows that weekly rhythm. Keep your throwing volume, ball type, and any high-intent work within the limits given by your clinician and throwing coach. Being cleared to throw does not automatically mean max-effort pulldowns, weighted-ball work, or a 100% bullpen is cleared. Stop if you feel pain, instability, unusual soreness, or a change in mechanics.</div>
 <div class="card">
-<h3>DAILY THROWING TARGETS  |  DISTANCE + EFFORT</h3>
-<p>You throw Monday-Saturday, with Sunday off. The plan below gives every throwing day a distance and effort target and adds one focused velo/bullpen session per week in the later phases. These are planning ceilings, not targets to force through symptoms. Because of your labrum history, confirm this six-day schedule and each progression with your throwing coach/clinician. If they have you on a different return-to-throw plan, follow that plan instead.</p>
-<div class="notice"><strong>Progression rule:</strong> Move forward only when your coach approves, your arm feels normal during throwing and the next morning, and your mechanics stay clean. If not, repeat the last approved step or rest. Do not add throws to make up a missed day. The percentage means perceived throwing intent, not a measured medical limit.</div>
-<h3>PHASE 1  |  OCT 12 - NOV 8  |  BUILD CAPACITY</h3>
-<div class="item"><strong>Monday - Recovery catch</strong><p>45 ft  |  35-40% effort</p></div>
-<div class="item"><strong>Tuesday - Easy catch</strong><p>45-60 ft  |  40-45% effort; use 45 ft until the next step is approved.</p></div>
-<div class="item"><strong>Wednesday - Easy catch + movement</strong><p>45-60 ft  |  40-45% effort; smooth throws, no pulldowns.</p></div>
-<div class="item"><strong>Thursday - Recovery catch</strong><p>45 ft  |  35-40% effort; keep this deliberately easy.</p></div>
-<div class="item"><strong>Friday - Progression catch</strong><p>60-75 ft  |  45-50% effort, only after the shorter step is comfortable and approved.</p></div>
-<div class="item"><strong>Saturday - Easy catch</strong><p>45-60 ft  |  40-45% effort; do not turn this into a velo day.</p></div>
-<p class="sub"><strong>Sunday:</strong> no throwing. Do your prescribed recovery/arm-care routine only. Plyo balls in this phase are technique-only and only if your coach/clinician has specifically cleared them.</p>
-<h3>PHASE 2  |  NOV 9 - NOV 30  |  BUILD + INTRODUCE VELO</h3>
-<div class="item"><strong>Monday - Recovery catch</strong><p>60 ft  |  35-40% effort</p></div>
-<div class="item"><strong>Tuesday - Catch + approved plyo routine</strong><p>75-90 ft  |  45-55% effort for catch. Plyo-ball type, distance, reps, and effort are coach-set.</p></div>
-<div class="item"><strong>Wednesday - Easy catch</strong><p>60-75 ft  |  40-45% effort; no high-intent throws.</p></div>
-<div class="item"><strong>Thursday - Recovery catch</strong><p>45-60 ft  |  35-40% effort; reduce or skip if the arm is tired from lifting or the prior day.</p></div>
-<div class="item"><strong>Friday - Progression catch</strong><p>90-120 ft  |  50-60% effort, only within your coach-approved distance.</p></div>
-<div class="item"><strong>Saturday - Supervised velo OR bullpen day</strong><p>Warm-up catch: 60-90 ft  |  40-50% effort. Pulldown intent or bullpen pitch count/intensity must be prescribed by your coach. Alternate the emphasis week to week; do not stack both as max-intent sessions.</p></div>
-<p class="sub"><strong>Sunday:</strong> no throwing. Do not use a 300+ ft / 100% effort throw as an automatic November goal. Long toss and high intent must be introduced in person by your coach/clinician.</p>
-<h3>PHASE 3  |  DEC 1 - DEC 13  |  VELO + BULLPEN DEVELOPMENT</h3>
-<div class="item"><strong>Monday - Recovery catch</strong><p>60-75 ft  |  35-40% effort</p></div>
-<div class="item"><strong>Tuesday - Catch + approved plyo routine</strong><p>90-120 ft  |  50-60% effort for catch. Plyo-ball drills remain coach-set.</p></div>
-<div class="item"><strong>Wednesday - Easy catch</strong><p>75-90 ft  |  40-50% effort</p></div>
-<div class="item"><strong>Thursday - Recovery catch</strong><p>45-60 ft  |  35-40% effort; keep it light, especially after a hard lift.</p></div>
-<div class="item"><strong>Friday - Progression catch</strong><p>90-150 ft  |  50-60% effort, only if each distance has been approved and tolerated.</p></div>
-<div class="item"><strong>Saturday - Supervised velo OR bullpen day</strong><p>Warm-up catch: 60-90 ft  |  40-50% effort. Velo/pulldown or bullpen intensity is coach-set; stop when mechanics, command, or arm comfort changes.</p></div>
-<p class="sub"><strong>Sunday:</strong> no throwing. Progress to longer distances only with explicit approval; do not chase 300+ ft or 100% effort just because it is December.</p>
-<h3>DEC 14 - DEC 18  |  TAPER</h3>
-<div class="item"><strong>Monday - Easy catch</strong><p>60 ft  |  40% effort, if scheduled by your coach.</p></div>
-<div class="item"><strong>Tuesday - Recovery catch</strong><p>45-60 ft  |  35-40% effort.</p></div>
-<div class="item"><strong>Wednesday - Easy catch</strong><p>60 ft  |  40% effort, only if the arm feels normal.</p></div>
-<div class="item"><strong>Thursday - Recovery / arm care</strong><p>45 ft  |  35% effort, or no throws if your coach calls for rest.</p></div>
-<p class="sub">Stop throwing and tell your coach/clinician if you feel pain, instability, unusual soreness, or a change in mechanics. Never push through symptoms to hit a distance or effort percentage.</p>
+<h3>DAILY THROWING TARGETS | DISTANCE + EFFORT</h3>
+<p>Effort means how hard the throw feels, not how hard you should force it. Do the listed catch session each day Monday-Saturday, keeping the throw count and warm-up consistent with your coach's plan. The Saturday velo/bullpen session replaces ordinary catch progression; it is not extra work on top of it.</p>
+<div class="notice"><strong>Progression rule:</strong> Only move to the next distance or intensity if your coach approves and your arm feels normal during the session and the next morning. If you are sore or mechanics change, repeat an easier step or take extra rest with your coach's guidance. Do not make up missed throws.</div>
+<h3>PHASE 1 | OCT 12 - NOV 8 | BUILD A CONSISTENT BASE</h3>
+<div class="item"><strong>Monday - Recovery catch</strong><p>45 ft | 35-40% effort</p></div>
+<div class="item"><strong>Tuesday - Easy catch</strong><p>45 ft | 40% effort</p></div>
+<div class="item"><strong>Wednesday - Easy catch + movement</strong><p>45-60 ft | 40-45% effort; stay at 45 ft until the next step is approved.</p></div>
+<div class="item"><strong>Thursday - Recovery catch</strong><p>45 ft | 35-40% effort</p></div>
+<div class="item"><strong>Friday - Controlled progression catch</strong><p>60 ft | 45% effort, only if 45 ft is comfortable and approved; otherwise 45 ft | 40%.</p></div>
+<div class="item"><strong>Saturday - Easy catch</strong><p>45-60 ft | 40-45% effort; no max-intent throws.</p></div>
+<p class="sub"><strong>Sunday:</strong> no throwing. Follow your prescribed recovery or arm-care routine only. Plyo balls only if specifically cleared, and keep them technique-focused in this phase.</p>
+<h3>PHASE 2 | NOV 9 - NOV 30 | BUILD + INTRODUCE SUPERVISED VELO</h3>
+<div class="item"><strong>Monday - Recovery catch</strong><p>60 ft | 35-40% effort</p></div>
+<div class="item"><strong>Tuesday - Catch + approved plyo routine</strong><p>75 ft | 45-50% effort for catch. Plyo-ball type, distance, reps, and effort are coach-set.</p></div>
+<div class="item"><strong>Wednesday - Easy catch</strong><p>60-75 ft | 40-45% effort; stay at 60 ft if not yet approved for 75 ft.</p></div>
+<div class="item"><strong>Thursday - Recovery catch</strong><p>45-60 ft | 35-40% effort; keep this deliberately easy.</p></div>
+<div class="item"><strong>Friday - Controlled progression catch</strong><p>90 ft | 50-55% effort only after 75 ft is approved and comfortable; otherwise 60-75 ft | 45-50%.</p></div>
+<div class="item"><strong>Saturday - Coach-supervised velo OR bullpen</strong><p>Warm-up catch: 60-90 ft | 40-50% effort. The velo throws or bullpen pitch count/intensity must be set by your coach. Alternate the emphasis week to week; do not stack both as max-intent sessions.</p></div>
+<p class="sub"><strong>Sunday:</strong> no throwing. Do not make 300+ ft or 100% effort an automatic November target. Long toss and high intent must be introduced and progressed by your coach/clinician.</p>
+<h3>PHASE 3 | DEC 1 - DEC 13 | VELO + BULLPEN DEVELOPMENT</h3>
+<div class="item"><strong>Monday - Recovery catch</strong><p>60 ft | 35-40% effort</p></div>
+<div class="item"><strong>Tuesday - Catch + approved plyo routine</strong><p>90 ft | 50% effort if cleared for this distance; otherwise 75 ft | 45-50%. Plyo-ball drills remain coach-set.</p></div>
+<div class="item"><strong>Wednesday - Easy catch</strong><p>75-90 ft | 40-50% effort, only within the distance already approved for you.</p></div>
+<div class="item"><strong>Thursday - Recovery catch</strong><p>45-60 ft | 35-40% effort</p></div>
+<div class="item"><strong>Friday - Controlled progression catch</strong><p>90-120 ft | 50-60% effort only if each step has been approved and tolerated; otherwise repeat your last comfortable distance.</p></div>
+<div class="item"><strong>Saturday - Coach-supervised velo OR bullpen</strong><p>Warm-up catch: 60-90 ft | 40-50% effort. Velo/pulldown effort, number of throws, or bullpen pitch count/intensity is coach-set. Stop when mechanics, command, or arm comfort changes.</p></div>
+<p class="sub"><strong>Sunday:</strong> no throwing. Only progress to longer distances or higher intent when your coach explicitly approves; do not chase 300+ ft or 100% effort just because it is December.</p>
+<h3>DEC 14 - DEC 18 | TAPER</h3>
+<div class="item"><strong>Monday - Easy catch</strong><p>60 ft | 40% effort, if this date is a scheduled throwing day.</p></div>
+<div class="item"><strong>Tuesday - Recovery catch</strong><p>45-60 ft | 35-40% effort.</p></div>
+<div class="item"><strong>Wednesday - Easy catch</strong><p>60 ft | 40% effort, only if your arm feels normal.</p></div>
+<div class="item"><strong>Thursday - Recovery catch</strong><p>45 ft | 35% effort.</p></div>
+<div class="item"><strong>Friday, Dec 18 - Easy catch</strong><p>60 ft | 40% effort, only if your arm feels normal and your coach has not adjusted the taper.</p></div>
+<p class="sub">The fixed program ends Friday, December 18. Follow your coach's plan for Saturday if your season calendar continues beyond this program. Never push through symptoms to hit a distance or effort percentage.</p>
 </div>
-<div class="card">
-<h3>PHASE 1  |  OCTOBER 12 - NOVEMBER 8</h3><span class="pill">BUILD YOUR ARM BACK UP</span>
-<p>Goal: establish the six-day routine with four easy/recovery exposures and gradual, approved distance increases. The percentage and distance targets above are the day-by-day guide.</p>
-<ul>
-<li><strong>Monday-Saturday:</strong> use the exact daily distance and effort targets in the table above. Monday and Thursday are deliberately easy; Saturday is easy catch in this phase.</li>
-<li><strong>Plyo balls:</strong> first month is technique and arm tolerance only if your throwing coach/PT has specifically cleared plyo-ball drills. Keep them low intensity; no max-effort pulldowns or radar-gun tests.</li>
-</ul><p class="sub">Weekly log: throwing days completed, approximate throws (if your coach tracks them), distance, effort, and how the arm feels that evening and the next morning.</p>
-</div>
-<div class="card">
-<h3>PHASE 2  |  NOVEMBER 9 - NOVEMBER 30</h3><span class="pill">INTRODUCE VELO WORK</span>
-<p>Goal: keep the six-day catch rhythm and introduce one supervised velo OR bullpen exposure per week only if the previous phase was symptom-free and your coach approves. Follow the exact daily targets above.</p>
-<ul>
-<li><strong>Tuesday - Catch + plyo-ball routine:</strong> approved warm-up and easy catch first. If your pitching coach/PT has cleared these drills, use a low-volume circuit: pivot-pick throws 2 x 4, rocker throws 2 x 4, and step-behind throws 2 x 4. Use only the ball weights, distances, and effort your coach assigns; these are not max-effort throws. Do not add reps if you feel good.</li>
-<li><strong>Thursday - Arm care / light catch if scheduled:</strong> bands and shoulder/scapular work as prescribed. Thursday is also a hard NOMAD lift day, so coordinate with your coach and skip extra throwing if workload/recovery calls for it.</li>
-<li><strong>Saturday - Velo day OR bullpen day:</strong> alternate the emphasis each week rather than doing max pulldowns and a max-intent bullpen together. November starts with the listed catch-distance targets and only coach-approved intent work; progress only if the prior sessions and next-morning checks stay normal. The listed catch targets do not authorize max-effort pulldowns. A pulldown day is a small number of supervised throws after a full warm-up. A bullpen day follows your pitching coach's pitch count and intensity plan.</li>
-<li><strong>Football / Nerf football:</strong> use only for light movement/coordination warm-ups if your coach likes them-not as a substitute for the throwing progression or as max-effort throws.</li>
-<li><strong>Softball:</strong> do not use a heavier ball for velocity throws unless your throwing clinician/coach specifically includes it in your rehab-approved plan.</li>
-</ul>
-</div>
-<div class="card">
-<h3>PHASE 3  |  DECEMBER 1 - DECEMBER 13</h3><span class="pill">VELO + BULLPEN DEVELOPMENT</span>
-<p>Goal: develop velo without stacking high-intensity throws. Follow the six-day distance/effort targets above; any long toss beyond your approved distance, pulldowns, and high-intent bullpen work must be set by your coach/PT.</p>
-<ul>
-<li><strong>Tuesday - Approved plyo-ball + catch:</strong> if cleared, repeat the low-volume circuit (pivot-pick 2 x 3-4, rocker 2 x 3-4, step-behind 2 x 3-4) with your coach's ball weights, distance, and intensity. Stop if mechanics change or the arm feels off.</li>
-<li><strong>Saturday - Main velo focus:</strong> schedule one coach-supervised velo session per week only if you have tolerated the previous phase. Alternate pulldown day and bullpen velo day week-to-week; your coach may replace a velo day with recovery. Avoid max pulldowns and a high-intent bullpen in the same session unless your coach specifically programs it.</li>
-<li><strong>Bullpen velo day:</strong> coach-led pitch selection, pitch count, rest, and intensity. Record the top/typical radar readings and pitch count; stop when mechanics or command drop. Do not throw extra pitches to chase a number.</li>
-<li><strong>Recovery:</strong> keep at least 48 hours between high-intent throwing sessions. No extra throw day to make up for a missed session.</li>
-</ul>
-</div>
-<div class="card"><h3>DECEMBER 14 - DECEMBER 18  |  TAPER</h3><p>Reduce total throwing volume. Keep only the catch, light plyo-ball work, or bullpen/velo exposure your coach selects. No last-minute max-effort testing if you are fatigued or the arm is not 100%.</p></div>
 <div class="card">
 <h3>ARM CARE ROUTINE</h3><p class="sub">Use your resistance bands for the exercises your PT/throwing clinician prescribed. Do the exact reps/sets they gave you; this checklist organizes the routine but does not replace their exercise selection or dosage. Football/Nerf football can be used for light movement warm-ups if your coach likes them. Do not use a softball or heavier ball for velocity work unless your clinician/coach specifically clears it.</p>
 <div id="armCareList">
