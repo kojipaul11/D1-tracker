@@ -1,315 +1,174 @@
+<section id="progress" class="hidden"><h2>Progress report.</h2><p>Only your logged measurements are shown here.</p><div class="card"><h3>EXIT VELOCITY · MPH</h3><canvas id="exitChart" class="canvas"></canvas><div class="sub" id="exitHistory"></div></div><div class="card"><h3>BAT SPEED · MPH</h3><canvas id="batChart" class="canvas"></canvas><div class="sub" id="batHistory"></div></div><div class="card"><h3>60-YARD TIME · SECONDS</h3><canvas id="sprintChart" class="canvas"></canvas><div class="sub" id="sprintHistory"></div></div><div class="card"><h3>WORKOUT HISTORY</h3><div id="allLogs"></div><div class="row wrap"><button onclick="exportData()">Export backup</button><button onclick="document.getElementById('importFile').click()">Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden" onchange="importData(event)"></div></div></section>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101318">
-<title>Diamond OS</title>
-<style>
-:root{color-scheme:dark;--bg:#101318;--panel:#1b2028;--line:#303744;--text:#f5f7fa;--muted:#a4adba;--accent:#c6f36a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,sans-serif}
-header{padding:24px 18px 16px;background:#171c23;border-bottom:1px solid var(--line)}
-h1{margin:0;font-size:27px;letter-spacing:-1px}h1 span{color:var(--accent)}
-header p{color:var(--muted);margin:7px 0 0;font-size:13px}
-main{max-width:760px;margin:auto;padding:16px 14px 90px}
-nav{display:flex;gap:8px;overflow:auto;padding:12px 0}
-button,.tab{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 13px;border-radius:10px;font-weight:650;cursor:pointer}
-button.primary,.tab.active{background:var(--accent);color:#111;border-color:var(--accent)}
-button.danger{color:#ff9d9d}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 0}
-h2{font-size:19px;margin:0 0 13px}h3{font-size:15px;margin:0 0 10px}
-label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}
-input,select,textarea{width:100%;padding:12px;border-radius:9px;border:1px solid var(--line);background:#11151b;color:var(--text);font:inherit}
-textarea{min-height:75px;resize:vertical}
-.row{display:flex;gap:9px;align-items:center}.row>*{flex:1;min-width:0}
-.small{font-size:12px;color:var(--muted)}.muted{color:var(--muted)}
-.exercise{border:1px solid var(--line);padding:12px;border-radius:12px;margin:9px 0}
-.exercise-top{display:flex;gap:10px;align-items:center}
-.exercise-top input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent);flex-shrink:0}
-.exercise-name{font-weight:700;flex:1}
-.exercise-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.exercise-fields input{padding:9px}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.stat{background:#11151b;padding:14px;border-radius:12px}
-.stat strong{font-size:23px;display:block}.stat span{font-size:12px;color:var(--muted)}
-.hidden{display:none!important}
-.metric{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.barrow{margin:12px 0}.barlabel{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
-.barbg{height:10px;border-radius:20px;background:#303744;overflow:hidden}
-.bar{height:100%;background:var(--accent);border-radius:20px}
-footer{color:var(--muted);font-size:12px;text-align:center;padding:16px}
-@media(min-width:600px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
-</style>
-</head>
-<body>
-<header>
-  <h1>DIAMOND <span>OS</span></h1>
-  <p>YOUR TRAINING. YOUR DATA. YOUR PROGRESS.</p>
-</header>
-<main>
-  <div class="stats">
-    <div class="stat"><strong id="doneCount">0</strong><span>Exercises completed today</span></div>
-    <div class="stat"><strong id="sleepStat">—</strong><span>Hours of sleep</span></div>
-    <div class="stat"><strong id="streakStat">0%</strong><span>Today's completion</span></div>
-    <div class="stat"><strong id="monthStat">—</strong><span>Current program month</span></div>
-  </div>
+<section id="liftprogress" class="hidden"><h2>Lift progress.</h2><p>Every exercise you add to a plan is available here automatically once you log it.</p><div class="card"><label>Choose exercise</label><select id="liftExerciseSelect" onchange="renderLiftProgress()"><option value="">No exercise logs yet</option></select><label>Time range</label><select id="liftRange" onchange="renderLiftProgress()"><option value="month">This month</option><option value="6months">6 months</option><option value="year">1 year</option><option value="all">All time</option></select><div class="grid"><div><div class="metric" id="liftLatest">—</div><div class="metric-label">Latest result</div></div><div><div class="metric" id="liftBest">—</div><div class="metric-label">Best result</div></div></div><canvas id="liftChart" class="canvas"></canvas><div id="liftHistory"></div></div></section>
 
-  <nav>
-    <button class="tab active" data-page="workout">Workout</button>
-    <button class="tab" data-page="program">Build program</button>
-    <button class="tab" data-page="progress">Progress</button>
-    <button class="tab" data-page="checkin">Daily check-in</button>
-  </nav>
+<section id="bodyweight" class="hidden"><h2>Body weight.</h2><p>Record measurements when you choose and follow your trend over time.</p><div class="card"><label>Date</label><input id="bwDate" type="date"><label>Body weight (lb)</label><input id="bwValue" type="number" min="1" step="0.1" placeholder="Weight in pounds"><label>Notes (optional)</label><input id="bwNotes" placeholder="Optional note"><button class="primary full" onclick="saveBodyWeight()">Save body weight</button></div><div class="card"><h3>WEIGHT HISTORY</h3><canvas id="bwChart" class="canvas"></canvas><div id="bwHistory"></div></div></section>
 
-  <section id="workout" class="page">
-    <div class="card">
-      <h2>Today's training</h2>
-      <div class="row">
-        <div><label for="workDate">Workout date</label><input id="workDate" type="date"></div>
-        <div><label for="workDay">Training day</label><select id="workDay">
-          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-          <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
-        </select></div>
-      </div>
-      <p class="small">Your selected month's exercises repeat each week on their assigned days.</p>
-    </div>
-    <div class="card">
-      <h2 id="dayTitle">Exercises</h2>
-      <div id="exerciseList"></div>
-      <button class="primary" id="saveWorkout">Save workout</button>
-      <p id="saveStatus" class="small"></p>
-    </div>
-  </section>
+<section id="goals" class="hidden"><h2>Monthly goals.</h2><p>Choose a measurable target and track your progress through the month.</p><div class="card"><label>Goal month</label><input id="goalMonth" type="month"><label>Goal</label><input id="goalName" placeholder="e.g. Bench press, 60-yard time, throwing velo"><div class="two"><div><label>Target value</label><input id="goalTarget" type="number" step="0.01" placeholder="e.g. 185"></div><div><label>Unit</label><select id="goalUnit"><option>lb</option><option>mph</option><option>sec</option><option>reps</option><option>seconds</option><option>inches</option><option>sessions</option><option>custom</option></select></div></div><label>Goal category</label><select id="goalCategory"><option>Strength</option><option>Speed</option><option>Hitting</option><option>Throwing</option><option>Body weight</option><option>Consistency</option><option>Custom</option></select><button class="primary full" onclick="saveGoal()">Add monthly goal</button></div><div class="card"><h3>GOALS FOR THIS MONTH</h3><div id="goalList"></div></div></section>
 
-  <section id="program" class="page hidden">
-    <div class="card">
-      <h2>Monthly program builder</h2>
-      <label for="programMonth">Choose program month</label>
-      <input type="month" id="programMonth">
-      <p class="small">Build a separate program for each month. Your weekday exercises repeat each week until you change the month.</p>
-      <label for="programDay">Choose weekday</label>
-      <select id="programDay">
-        <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-        <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
-      </select>
-      <div id="builderList"></div>
-      <div class="row">
-        <button class="primary" id="addExercise">+ Add exercise</button>
-        <button id="saveProgram">Save day</button>
-      </div>
-      <p id="programStatus" class="small"></p>
-    </div>
-    <div class="card">
-      <h3>Morning reminders</h3>
-      <p class="small">For a reliable reminder on your iPhone, open the Reminders app and create a daily reminder for your chosen morning time. A GitHub Pages website alone cannot guarantee notifications when closed.</p>
-      <button id="reminderHelp">Show reminder steps</button>
-      <p id="reminderSteps" class="small hidden">1. Open Apple's Reminders app. 2. Create a reminder called “Diamond OS — morning check-in.” 3. Set the date and your preferred morning time. 4. Choose Repeat → Daily.</p>
-    </div>
-  </section>
-
-  <section id="progress" class="page hidden">
-    <div class="card">
-      <h2>Record performance</h2>
-      <label for="metricDate">Date measured</label><input id="metricDate" type="date">
-      <div class="metric">
-        <div><label>Exit velocity (mph)</label><input id="exitVelo" type="number" step=".1" placeholder="e.g. 93"></div>
-        <div><label>Bat speed (mph)</label><input id="batSpeed" type="number" step=".1" placeholder="e.g. 73"></div>
-        <div><label>Throwing velocity (mph)</label><input id="throwVelo" type="number" step=".1" placeholder="e.g. 89"></div>
-        <div><label>60-yard time (seconds)</label><input id="sixtyTime" type="number" step=".01" placeholder="e.g. 6.80"></div>
-      </div>
-      <button class="primary" id="saveMetrics" style="margin-top:14px">Save measurements</button>
-      <p id="metricStatus" class="small"></p>
-    </div>
-    <div class="card">
-      <h2>Progress graphs</h2>
-      <label for="graphMetric">Choose metric</label>
-      <select id="graphMetric">
-        <option value="exitVelo">Exit velocity (mph)</option>
-        <option value="batSpeed">Bat speed (mph)</option>
-        <option value="throwVelo">Throwing velocity (mph)</option>
-        <option value="sixtyTime">60-yard time (seconds)</option>
-        <option value="sleep">Sleep (hours)</option>
-      </select>
-      <div id="graph"></div>
-      <div id="metricHistory" class="small"></div>
-    </div>
-  </section>
-
-  <section id="checkin" class="page hidden">
-    <div class="card">
-      <h2>Daily check-in</h2>
-      <label for="checkDate">Date</label><input id="checkDate" type="date">
-      <label for="sleepHours">Hours of sleep</label><input id="sleepHours" type="number" min="0" max="24" step=".25" placeholder="e.g. 8">
-      <label for="feeling">How are you feeling today?</label>
-      <select id="feeling"><option>Great</option><option>Good</option><option>Okay</option><option>Tired</option><option>Sore</option><option>Need recovery</option></select>
-      <label for="dailyNotes">Notes, soreness, energy, or how the workout felt</label>
-      <textarea id="dailyNotes" placeholder="How did you feel? What went well?"></textarea>
-      <button class="primary" id="saveCheckin" style="margin-top:12px">Save check-in</button>
-      <p id="checkinStatus" class="small"></p>
-      <p class="small">Sleep must be entered manually. This website cannot directly read Apple Health sleep data.</p>
-    </div>
-  </section>
-  <footer>Diamond OS · Saved locally in this browser on this device.</footer>
-</main>
+</main><footer>DIAMOND OS · FREE · YOUR DATA STAYS IN THIS BROWSER</footer>
 
 <script>
-const $=id=>document.getElementById(id);
-const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-const today=new Date();
-const dateStr=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-const monthStr=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-$("workDate").value=dateStr(today);
-$("checkDate").value=dateStr(today);
-$("metricDate").value=dateStr(today);
-$("programMonth").value=monthStr(today);
-$("workDay").value=days[(today.getDay()+6)%7];
 
-function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
-function write(key,value){localStorage.setItem(key,JSON.stringify(value))}
-let programs=read("diamondProgramsV2",{});
-let sessions=read("diamondSessionsV2",{});
-let metrics=read("diamondMetricsV2",[]);
-let checkins=read("diamondCheckinsV2",{});
-const programKey=()=> $("programMonth").value||monthStr(today);
-const dayKey=()=> $("programDay").value;
-const sessionKey=()=> $("workDate").value||dateStr(today);
-const checkKey=()=> $("checkDate").value||dateStr(today);
-function exercises(month,day){return programs[month]?.[day]||[]}
+const $=id=>document.getElementById(id);const read=(k,f=[])=>{try{return JSON.parse(localStorage.getItem(k))||f}catch{return f}};let logs=read('diamondLogs'),plans=read('diamondPlans'),schedule=read('diamondSchedule',{}),exerciseLogs=read('diamondExerciseLogs'),bodyWeights=read('diamondBodyWeights'),monthlyGoals=read('diamondMonthlyGoals'),exerciseTimers={};const now=new Date();const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};const keyDate=d=>typeof d==='string'?d:localDate(d);let selectedDate=localDate(now);$('today').textContent=now.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}).toUpperCase();$('logDate').value=selectedDate;$('monthPicker').value=selectedDate.slice(0,7);
 
-function showPage(name){
- document.querySelectorAll(".page").forEach(p=>p.classList.toggle("hidden",p.id!==name));
- document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
- if(name==="workout")renderWorkout();
- if(name==="program")renderBuilder();
- if(name==="progress")renderGraph();
- if(name==="checkin")loadCheckin();
-}
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-function renderWorkout(){
- const date=sessionKey(),day=$("workDay").value,month=date.slice(0,7);
- $("dayTitle").textContent=day+" · "+month;
- const plan=exercises(month,day);
- const saved=sessions[date]||{items:[]};
- $("exerciseList").innerHTML="";
- if(!plan.length){
-  $("exerciseList").innerHTML='<p class="muted">No exercises planned for this day yet. Open Build program to add them.</p>';
- }else plan.forEach((ex,i)=>{
-  const actual=saved.items?.[i]||{};
-  const el=document.createElement("div");el.className="exercise";
-  el.innerHTML=`<div class="exercise-top"><input type="checkbox" class="done" ${actual.done?"checked":""} aria-label="Exercise completed"><div class="exercise-name"></div></div><p class="small planned"></p><div class="exercise-fields"><div><label>Weight</label><input class="weight" placeholder="lb" value=""></div><div><label>Actual reps</label><input class="reps" type="number" placeholder="reps" value=""></div><div><label>Sets done</label><input class="sets" type="number" placeholder="sets" value=""></div></div>`;
-  el.querySelector(".exercise-name").textContent=ex.name;
-  el.querySelector(".planned").textContent=`Plan: ${ex.sets||"—"} sets × ${ex.reps||"—"} reps · ${ex.rest||"—"} rest`;
-  el.querySelector(".weight").value=actual.weight||"";
-  el.querySelector(".reps").value=actual.reps||"";
-  el.querySelector(".sets").value=actual.sets||"";
-  el.dataset.index=i;$("exerciseList").appendChild(el);
- });
- updateStats();
-}
-function collectWorkout(){
- const date=sessionKey(),day=$("workDay").value,month=date.slice(0,7),plan=exercises(month,day);
- const items=[...$("exerciseList").querySelectorAll(".exercise")].map(el=>({
-  done:el.querySelector(".done").checked,weight:el.querySelector(".weight").value,
-  reps:el.querySelector(".reps").value,sets:el.querySelector(".sets").value
- }));
- sessions[date]={day,items,planNames:plan.map(e=>e.name)};
- write("diamondSessionsV2",sessions);updateStats();
-}
-$("saveWorkout").onclick=()=>{collectWorkout();$("saveStatus").textContent="Workout saved on this device."};
-$("workDate").onchange=()=>{$("workDay").value=days[(new Date(sessionKey()+"T12:00:00").getDay()+6)%7];renderWorkout()};
-$("workDay").onchange=renderWorkout;
+const basePlan={
 
-function renderBuilder(){
- const day=dayKey(),list=exercises(programKey(),day);
- $("builderList").innerHTML="";
- if(!list.length)$("builderList").innerHTML='<p class="muted">No exercises yet. Add your first exercise below.</p>';
- list.forEach((ex,i)=>{
-  const el=document.createElement("div");el.className="exercise";
-  el.innerHTML=`<label>Exercise name</label><input class="ename"><div class="exercise-fields"><div><label>Sets</label><input class="esets" type="number"></div><div><label>Reps / distance</label><input class="ereps"></div><div><label>Rest</label><input class="erest"></div></div><button class="danger remove" style="margin-top:10px">Remove</button>`;
-  el.querySelector(".ename").value=ex.name;
-  el.querySelector(".esets").value=ex.sets||"";
-  el.querySelector(".ereps").value=ex.reps||"";
-  el.querySelector(".erest").value=ex.rest||"";
-  el.querySelector(".remove").onclick=()=>{list.splice(i,1);setPlan(day,list);renderBuilder()};
-  $("builderList").appendChild(el);
- });
-}
-function setPlan(day,list){
- programs[programKey()] ||= {};
- programs[programKey()][day]=list;write("diamondProgramsV2",programs);
-}
-$("addExercise").onclick=()=>{
- const day=dayKey(),list=[...exercises(programKey(),day),{name:"New exercise",sets:3,reps:"8",rest:"90 sec"}];
- setPlan(day,list);renderBuilder();
-};
-$("saveProgram").onclick=()=>{
- const list=[...$("builderList").querySelectorAll(".exercise")].map(el=>({
-  name:el.querySelector(".ename").value.trim()||"Exercise",
-  sets:el.querySelector(".esets").value,
-  reps:el.querySelector(".ereps").value,
-  rest:el.querySelector(".erest").value
- }));
- setPlan(dayKey(),list);$("programStatus").textContent="Monthly weekday plan saved.";
- renderWorkout();
-};
-$("programMonth").onchange=renderBuilder;
-$("programDay").onchange=renderBuilder;
-$("reminderHelp").onclick=()=>$("reminderSteps").classList.toggle("hidden");
+1:{focus:'Sprint / Acceleration',text:`Warm-up (8–12 min): easy jog, dynamic mobility, skips and 2–3 progressive build-ups.
 
-function loadCheckin(){
- const c=checkins[checkKey()]||{};
- $("sleepHours").value=c.sleep??"";
- $("feeling").value=c.feeling||"Good";
- $("dailyNotes").value=c.notes||"";
+Acceleration: 4–6 x 10-yard starts, then 3 x 20-yard accelerations. Rest 2–3 min between fast reps; stop if speed or mechanics drop.
+
+Optional: light core stability 2–3 sets. Keep the total session crisp.`},
+
+2:{focus:'Top Speed',text:`Warm-up (8–12 min): dynamic mobility, skips, dribbles and progressive build-ups.
+
+Top speed: 3–5 x 20–30-yard fly-in runs at high quality, with a gradual build-up and 3–4 min full recovery. Skip this if legs are heavy or team practice already included max sprinting.
+
+Optional: easy mobility and light arm-care routine from your coach.`},
+
+3:{focus:'Hitting',text:`Hitting skill session: tee work for line drives through the middle, controlled intent swings, then a small set of game-like swings. Track quality and bat speed only when measurement is available.
+
+Finish with trunk rotation control and mobility. Keep volume appropriate for team practice.`},
+
+4:{focus:'Sprint / Agility',text:`Warm-up (8–12 min) with dynamic mobility and progressive runs.
+
+Acceleration: 3–4 x 10-yard starts. Change of direction: 3–4 quality reps each side of a simple 5-10-5 or cone cut drill, with full recovery and clean footwork.
+
+Optional: low-volume med-ball rotational throws if coached and technique stays sharp.`},
+
+5:{focus:'Speed + Skill',text:`Warm-up and 3–4 x 20-yard accelerations with full recovery. Keep this short if Monday/Tuesday/Thursday were demanding.
+
+Skill work: follow your team throwing plan; do not add max-effort throws just to chase a number. Optional relaxed hitting or mobility based on recovery.`},
+
+6:{focus:'Recovery / Skills',text:`Optional easy skill day: relaxed tee work, catching/fielding fundamentals, walking, and mobility. Keep effort low. No need to add conditioning if you are tired from the week.`},
+
+0:{focus:'Off Day',text:`Rest day. Optional easy walk and comfortable mobility. Eat regular meals, hydrate, and get adequate sleep. If you have a game or team practice, follow the team's schedule instead.`}
+
 }
-$("checkDate").onchange=loadCheckin;
-$("saveCheckin").onclick=()=>{
- checkins[checkKey()]={sleep:$("sleepHours").value,feeling:$("feeling").value,notes:$("dailyNotes").value};
- write("diamondCheckinsV2",checkins);$("checkinStatus").textContent="Check-in saved.";
- updateStats();
-};
-$("saveMetrics").onclick=()=>{
- const entry={date:$("metricDate").value||dateStr(today)};
- ["exitVelo","batSpeed","throwVelo","sixtyTime"].forEach(k=>{const v=$(k).value;if(v!=="")entry[k]=Number(v)});
- if(!Object.keys(entry).some(k=>k!=="date")){$("metricStatus").textContent="Enter at least one measurement.";return}
- metrics=metrics.filter(m=>m.date!==entry.date);metrics.push(entry);
- metrics.sort((a,b)=>a.date.localeCompare(b.date));write("diamondMetricsV2",metrics);
- $("metricStatus").textContent="Measurements saved.";renderGraph();
-};
-$("graphMetric").onchange=renderGraph;
-function renderGraph(){
- const key=$("graphMetric").value;
- let values=key==="sleep"?Object.entries(checkins).filter(([d,c])=>c.sleep!==""&&c.sleep!=null).map(([date,c])=>({date,value:Number(c.sleep)})):
- metrics.filter(m=>m[key]!=null).map(m=>({date:m.date,value:Number(m[key])}));
- values.sort((a,b)=>a.date.localeCompare(b.date));
- const graph=$("graph");graph.innerHTML="";
- if(!values.length){graph.innerHTML='<p class="muted">No measurements yet. Save a measurement to start your graph.</p>';$("metricHistory").textContent="";return}
- const max=Math.max(...values.map(v=>v.value)),min=Math.min(...values.map(v=>v.value));
- values.forEach(v=>{
-  const row=document.createElement("div");row.className="barrow";
-  const label=document.createElement("div");label.className="barlabel";
-  const d=document.createElement("span");d.textContent=v.date;
-  const n=document.createElement("strong");n.textContent=v.value;
-  label.append(d,n);
-  const bg=document.createElement("div");bg.className="barbg";
-  const bar=document.createElement("div");bar.className="bar";
-  bar.style.width=(max===min?100:Math.max(5,((v.value-min)/(max-min))*100))+"%";
-  bg.appendChild(bar);row.append(label,bg);graph.appendChild(row);
- });
- $("metricHistory").textContent=values.length+" saved measurements. For the 60-yard time, a lower number is faster.";
+
+function monthPhase(m){let n=Number(m.slice(5,7));if(n===10)return ['Foundation & technique','Build consistent warm-ups, sprint mechanics, and repeatable skill quality.'];if(n===11)return ['Build quality','Progress only if recovery is good. Keep sprint volume modest and reps fast.'];if(n===12)return ['Quality & power','Prioritize crisp speed, rotational skill quality, and recovery around holidays/team work.'];if(n===1)return ['Sharpen & assess','Maintain speed quality, retest only when rested, and adjust around tryouts/team schedule.'];return ['Build the base','Repeat good mechanics and keep training consistent.'];}
+
+function ensureDay(date){let k=keyDate(date);if(!schedule[k]){let d=new Date(k+'T12:00:00'),b=basePlan[d.getDay()];schedule[k]={focus:b.focus,text:b.text,notes:'',done:false,exercises:[]};}if(!Array.isArray(schedule[k].exercises))schedule[k].exercises=[];return schedule[k]}
+
+function showPage(page){document.querySelectorAll('main section').forEach(s=>s.classList.toggle('hidden',s.id!==page));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(page==='home')renderHome();if(page==='calendar')renderCalendar();if(page==='program')loadSession();if(page==='progress')renderProgress();if(page==='liftprogress')renderLiftProgress();if(page==='bodyweight')renderBodyWeight();if(page==='goals')renderGoals();window.scrollTo(0,0)}document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+
+function saveSchedule(){localStorage.setItem('diamondSchedule',JSON.stringify(schedule))}function openDate(k){selectedDate=k;showPage('program')}
+
+function loadSession(){let s=ensureDay(selectedDate);$('selectedDateLabel').textContent=new Date(selectedDate+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric',year:'numeric'}).toUpperCase();$('planHeading').textContent=dayNames[new Date(selectedDate+'T12:00:00').getDay()]+' plan.';$('sessionFocus').value=s.focus;$('sessionText').value=s.text;$('sessionNotes').value=s.notes||'';$('sessionDone').checked=!!s.done;$('planSub').textContent=s.done?'Session marked complete. You can still edit it.':'Edit the session to match your real schedule.';renderExerciseList()}
+
+function saveSession(){let prior=ensureDay(selectedDate);schedule[selectedDate]={...prior,focus:$('sessionFocus').value,text:$('sessionText').value,notes:$('sessionNotes').value,done:$('sessionDone').checked};saveSchedule();renderHome();alert('Daily plan saved on this device.');}
+
+function renderCalendar(){let m=$('monthPicker').value||selectedDate.slice(0,7);$('monthPicker').value=m;let [yy,mm]=m.split('-').map(Number);let title=new Date(yy,mm-1,1);$('monthTitle').textContent=title.toLocaleDateString(undefined,{month:'long',year:'numeric'}).toUpperCase();let [phase,desc]=monthPhase(m);$('phaseText').textContent=phase;$('monthFocus').innerHTML='<strong>'+esc(phase)+'</strong><p>'+esc(desc)+'</p><p class="sub">Sprint sessions are planned Monday, Tuesday, Thursday, and Friday, with lighter skill/recovery days between. Adjust for team practices, games, soreness, and coach direction.</p>';let n=new Date(yy,mm,0).getDate(),html='';for(let day=1;day<=n;day++){let k=m+'-'+String(day).padStart(2,'0'),s=ensureDay(k),d=new Date(k+'T12:00:00');html+=`<button class="day ${k===selectedDate?'selected':''}" onclick="openDate('${k}')"><div class="dow">${dayNames[d.getDay()].slice(0,3).toUpperCase()} · ${day}</div><div class="focus">${esc(s.focus)}</div><div class="done">${s.done?'✓ COMPLETED':'Tap to view plan'}</div></button>`}$('days').innerHTML=html;saveSchedule()}
+
+function shiftMonth(n){let [y,m]=$('monthPicker').value.split('-').map(Number),d=new Date(y,m-1+n,1);$('monthPicker').value=localDate(d).slice(0,7);renderCalendar()}$('monthPicker').addEventListener('change',renderCalendar);function resetMonth(){if(!confirm('Reset all daily plan edits and completion marks for this month? Workout logs will not be deleted.'))return;let m=$('monthPicker').value;Object.keys(schedule).forEach(k=>{if(k.startsWith(m+'-'))delete schedule[k]});saveSchedule();renderCalendar()}
+<section id="progress" class="hidden"><h2>Progress report.</h2><p>Only your logged measurements are shown here.</p><div class="card"><h3>EXIT VELOCITY · MPH</h3><canvas id="exitChart" class="canvas"></canvas><div class="sub" id="exitHistory"></div></div><div class="card"><h3>BAT SPEED · MPH</h3><canvas id="batChart" class="canvas"></canvas><div class="sub" id="batHistory"></div></div><div class="card"><h3>60-YARD TIME · SECONDS</h3><canvas id="sprintChart" class="canvas"></canvas><div class="sub" id="sprintHistory"></div></div><div class="card"><h3>WORKOUT HISTORY</h3><div id="allLogs"></div><div class="row wrap"><button onclick="exportData()">Export backup</button><button onclick="document.getElementById('importFile').click()">Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden" onchange="importData(event)"></div></div></section>
+
+<section id="liftprogress" class="hidden"><h2>Lift progress.</h2><p>Every exercise you add to a plan is available here automatically once you log it.</p><div class="card"><label>Choose exercise</label><select id="liftExerciseSelect" onchange="renderLiftProgress()"><option value="">No exercise logs yet</option></select><label>Time range</label><select id="liftRange" onchange="renderLiftProgress()"><option value="month">This month</option><option value="6months">6 months</option><option value="year">1 year</option><option value="all">All time</option></select><div class="grid"><div><div class="metric" id="liftLatest">—</div><div class="metric-label">Latest result</div></div><div><div class="metric" id="liftBest">—</div><div class="metric-label">Best result</div></div></div><canvas id="liftChart" class="canvas"></canvas><div id="liftHistory"></div></div></section>
+
+<section id="bodyweight" class="hidden"><h2>Body weight.</h2><p>Record measurements when you choose and follow your trend over time.</p><div class="card"><label>Date</label><input id="bwDate" type="date"><label>Body weight (lb)</label><input id="bwValue" type="number" min="1" step="0.1" placeholder="Weight in pounds"><label>Notes (optional)</label><input id="bwNotes" placeholder="Optional note"><button class="primary full" onclick="saveBodyWeight()">Save body weight</button></div><div class="card"><h3>WEIGHT HISTORY</h3><canvas id="bwChart" class="canvas"></canvas><div id="bwHistory"></div></div></section>
+
+<section id="goals" class="hidden"><h2>Monthly goals.</h2><p>Choose a measurable target and track your progress through the month.</p><div class="card"><label>Goal month</label><input id="goalMonth" type="month"><label>Goal</label><input id="goalName" placeholder="e.g. Bench press, 60-yard time, throwing velo"><div class="two"><div><label>Target value</label><input id="goalTarget" type="number" step="0.01" placeholder="e.g. 185"></div><div><label>Unit</label><select id="goalUnit"><option>lb</option><option>mph</option><option>sec</option><option>reps</option><option>seconds</option><option>inches</option><option>sessions</option><option>custom</option></select></div></div><label>Goal category</label><select id="goalCategory"><option>Strength</option><option>Speed</option><option>Hitting</option><option>Throwing</option><option>Body weight</option><option>Consistency</option><option>Custom</option></select><button class="primary full" onclick="saveGoal()">Add monthly goal</button></div><div class="card"><h3>GOALS FOR THIS MONTH</h3><div id="goalList"></div></div></section>
+
+</main><footer>DIAMOND OS · FREE · YOUR DATA STAYS IN THIS BROWSER</footer>
+
+<script>
+
+const $=id=>document.getElementById(id);const read=(k,f=[])=>{try{return JSON.parse(localStorage.getItem(k))||f}catch{return f}};let logs=read('diamondLogs'),plans=read('diamondPlans'),schedule=read('diamondSchedule',{}),exerciseLogs=read('diamondExerciseLogs'),bodyWeights=read('diamondBodyWeights'),monthlyGoals=read('diamondMonthlyGoals'),exerciseTimers={};const now=new Date();const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};const keyDate=d=>typeof d==='string'?d:localDate(d);let selectedDate=localDate(now);$('today').textContent=now.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}).toUpperCase();$('logDate').value=selectedDate;$('monthPicker').value=selectedDate.slice(0,7);
+
+const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+const basePlan={
+
+1:{focus:'Sprint / Acceleration',text:`Warm-up (8–12 min): easy jog, dynamic mobility, skips and 2–3 progressive build-ups.
+
+Acceleration: 4–6 x 10-yard starts, then 3 x 20-yard accelerations. Rest 2–3 min between fast reps; stop if speed or mechanics drop.
+
+Optional: light core stability 2–3 sets. Keep the total session crisp.`},
+
+2:{focus:'Top Speed',text:`Warm-up (8–12 min): dynamic mobility, skips, dribbles and progressive build-ups.
+
+Top speed: 3–5 x 20–30-yard fly-in runs at high quality, with a gradual build-up and 3–4 min full recovery. Skip this if legs are heavy or team practice already included max sprinting.
+
+Optional: easy mobility and light arm-care routine from your coach.`},
+
+3:{focus:'Hitting',text:`Hitting skill session: tee work for line drives through the middle, controlled intent swings, then a small set of game-like swings. Track quality and bat speed only when measurement is available.
+
+Finish with trunk rotation control and mobility. Keep volume appropriate for team practice.`},
+
+4:{focus:'Sprint / Agility',text:`Warm-up (8–12 min) with dynamic mobility and progressive runs.
+
+Acceleration: 3–4 x 10-yard starts. Change of direction: 3–4 quality reps each side of a simple 5-10-5 or cone cut drill, with full recovery and clean footwork.
+
+Optional: low-volume med-ball rotational throws if coached and technique stays sharp.`},
+
+5:{focus:'Speed + Skill',text:`Warm-up and 3–4 x 20-yard accelerations with full recovery. Keep this short if Monday/Tuesday/Thursday were demanding.
+
+Skill work: follow your team throwing plan; do not add max-effort throws just to chase a number. Optional relaxed hitting or mobility based on recovery.`},
+
+6:{focus:'Recovery / Skills',text:`Optional easy skill day: relaxed tee work, catching/fielding fundamentals, walking, and mobility. Keep effort low. No need to add conditioning if you are tired from the week.`},
+
+0:{focus:'Off Day',text:`Rest day. Optional easy walk and comfortable mobility. Eat regular meals, hydrate, and get adequate sleep. If you have a game or team practice, follow the team's schedule instead.`}
+
 }
-function updateStats(){
- const date=sessionKey(),s=sessions[date]||{items:[]};
- const total=s.items.length,done=s.items.filter(i=>i.done).length;
- $("doneCount").textContent=done;
- $("streakStat").textContent=(total?Math.round(done/total*100):0)+"%";
- $("monthStat").textContent=date.slice(0,7);
- const c=checkins[date]||{};$("sleepStat").textContent=c.sleep?c.sleep+"h":"—";
-}
-renderWorkout();renderBuilder();loadCheckin();updateStats();
-</script>
-</body>
-</html>
+
+function monthPhase(m){let n=Number(m.slice(5,7));if(n===10)return ['Foundation & technique','Build consistent warm-ups, sprint mechanics, and repeatable skill quality.'];if(n===11)return ['Build quality','Progress only if recovery is good. Keep sprint volume modest and reps fast.'];if(n===12)return ['Quality & power','Prioritize crisp speed, rotational skill quality, and recovery around holidays/team work.'];if(n===1)return ['Sharpen & assess','Maintain speed quality, retest only when rested, and adjust around tryouts/team schedule.'];return ['Build the base','Repeat good mechanics and keep training consistent.'];}
+
+function ensureDay(date){let k=keyDate(date);if(!schedule[k]){let d=new Date(k+'T12:00:00'),b=basePlan[d.getDay()];schedule[k]={focus:b.focus,text:b.text,notes:'',done:false,exercises:[]};}if(!Array.isArray(schedule[k].exercises))schedule[k].exercises=[];return schedule[k]}
+
+function showPage(page){document.querySelectorAll('main section').forEach(s=>s.classList.toggle('hidden',s.id!==page));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(page==='home')renderHome();if(page==='calendar')renderCalendar();if(page==='program')loadSession();if(page==='progress')renderProgress();if(page==='liftprogress')renderLiftProgress();if(page==='bodyweight')renderBodyWeight();if(page==='goals')renderGoals();window.scrollTo(0,0)}document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+
+function saveSchedule(){localStorage.setItem('diamondSchedule',JSON.stringify(schedule))}function openDate(k){selectedDate=k;showPage('program')}
+
+function loadSession(){let s=ensureDay(selectedDate);$('selectedDateLabel').textContent=new Date(selectedDate+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric',year:'numeric'}).toUpperCase();$('planHeading').textContent=dayNames[new Date(selectedDate+'T12:00:00').getDay()]+' plan.';$('sessionFocus').value=s.focus;$('sessionText').value=s.text;$('sessionNotes').value=s.notes||'';$('sessionDone').checked=!!s.done;$('planSub').textContent=s.done?'Session marked complete. You can still edit it.':'Edit the session to match your real schedule.';renderExerciseList()}
+
+function saveSession(){let prior=ensureDay(selectedDate);schedule[selectedDate]={...prior,focus:$('sessionFocus').value,text:$('sessionText').value,notes:$('sessionNotes').value,done:$('sessionDone').checked};saveSchedule();renderHome();alert('Daily plan saved on this device.');}
+
+function renderCalendar(){let m=$('monthPicker').value||selectedDate.slice(0,7);$('monthPicker').value=m;let [yy,mm]=m.split('-').map(Number);let title=new Date(yy,mm-1,1);$('monthTitle').textContent=title.toLocaleDateString(undefined,{month:'long',year:'numeric'}).toUpperCase();let [phase,desc]=monthPhase(m);$('phaseText').textContent=phase;$('monthFocus').innerHTML='<strong>'+esc(phase)+'</strong><p>'+esc(desc)+'</p><p class="sub">Sprint sessions are planned Monday, Tuesday, Thursday, and Friday, with lighter skill/recovery days between. Adjust for team practices, games, soreness, and coach direction.</p>';let n=new Date(yy,mm,0).getDate(),html='';for(let day=1;day<=n;day++){let k=m+'-'+String(day).padStart(2,'0'),s=ensureDay(k),d=new Date(k+'T12:00:00');html+=`<button class="day ${k===selectedDate?'selected':''}" onclick="openDate('${k}')"><div class="dow">${dayNames[d.getDay()].slice(0,3).toUpperCase()} · ${day}</div><div class="focus">${esc(s.focus)}</div><div class="done">${s.done?'✓ COMPLETED':'Tap to view plan'}</div></button>`}$('days').innerHTML=html;saveSchedule()}
+
+function shiftMonth(n){let [y,m]=$('monthPicker').value.split('-').map(Number),d=new Date(y,m-1+n,1);$('monthPicker').value=localDate(d).slice(0,7);renderCalendar()}$('monthPicker').addEventListener('change',renderCalendar);function resetMonth(){if(!confirm('Reset all daily plan edits and completion marks for this month? Workout logs will not be deleted.'))return;let m=$('monthPicker').value;Object.keys(schedule).forEach(k=>{if(k.startsWith(m+'-'))delete schedule[k]});saveSchedule();renderCalendar()}
+function saveWorkout(){let obj={id:Date.now(),date:$('logDate').value||localDate(new Date()),type:$('logType').value,exit:$('exit').value,bat:$('bat').value,throwing:$('throwing').value,sixty:$('sixty').value,sets:$('sets').value,reps:$('reps').value,details:$('details').value,notes:$('notes').value};if(!obj.details.trim()&&!obj.notes.trim()&&!obj.exit&&!obj.bat&&!obj.throwing&&!obj.sixty&&!obj.sets&&!obj.reps){alert('Add a measurement or workout detail first.');return}logs.push(obj);localStorage.setItem('diamondLogs',JSON.stringify(logs));['exit','bat','throwing','sixty','sets','reps','details','notes'].forEach(id=>$(id).value='');renderHome();alert('Workout saved on this device.');showPage('home')}
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function renderHome(){let todayKey=localDate(new Date()),morningEntry=bodyWeights.filter(x=>x.date===todayKey).slice(-1)[0];if($('morningWeight'))$('morningWeight').value=morningEntry?morningEntry.value:'';if($('morningWeightStatus'))$('morningWeightStatus').textContent=morningEntry?'Morning weight saved today: '+morningEntry.value+' lb':'Not logged yet today.';$('workouts').textContent=logs.length;let monday=new Date(now);monday.setHours(0,0,0,0);monday.setDate(now.getDate()-((now.getDay()+6)%7));let cnt=0;[0,1,3,4].forEach(offset=>{let d=new Date(monday);d.setDate(monday.getDate()+offset);if(ensureDay(localDate(d)).done)cnt++});$('weekDone').textContent=cnt+'/4';let last=k=>logs.slice().reverse().find(l=>l[k]!==''&&l[k]!=null);$('exitMetric').textContent=last('exit')?.exit||'—';$('throwMetric').textContent=last('throwing')?.throwing||'—';let s=ensureDay(selectedDate);$('todaySummary').innerHTML=`<span class="pill">${esc(s.focus)}</span><p>${esc(s.text.split('\n')[0])}</p><div class="sub">${s.done?'✓ Marked complete':'Not marked complete yet'}</div>`;renderGoalDashboard();renderBodyMini();$('recent').innerHTML=logs.slice().reverse().slice(0,4).map(l=>`<div class="item"><strong>${esc(l.type)}</strong><div class="sub">${esc(l.date)} · ${esc(l.details||l.notes||'Measurement logged')}</div></div>`).join('')||'<p class="sub">No workouts logged yet.</p>'}
+
+function chart(id,key,lowerBetter=false){let c=$(id),ctx=c.getContext('2d'),ratio=window.devicePixelRatio||1,w=c.clientWidth*ratio,h=170*ratio;c.width=w;c.height=h;ctx.clearRect(0,0,w,h);let arr=logs.filter(l=>l[key]!==''&&Number(l[key])>0).slice().sort((a,b)=>a.date.localeCompare(b.date));if(!arr.length){ctx.fillStyle='#9ba3b4';ctx.font=`${12*ratio}px sans-serif`;ctx.fillText('Log measurements to see your trend',10*ratio,30*ratio);return}let vals=arr.map(l=>Number(l[key])),min=Math.min(...vals),max=Math.max(...vals),pad=22*ratio;ctx.strokeStyle='#343945';ctx.beginPath();ctx.moveTo(pad,pad);ctx.lineTo(pad,h-pad);ctx.lineTo(w-pad,h-pad);ctx.stroke();ctx.strokeStyle='#b5f36b';ctx.lineWidth=2*ratio;ctx.beginPath();vals.forEach((v,i)=>{let x=pad+(vals.length===1?(w-2*pad)/2:i*(w-2*pad)/(vals.length-1)),y=h-pad-((v-min+(max===min?0:(max-min)*.08))/(max-min||1))*(h-2*pad);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();ctx.fillStyle='#b5f36b';vals.forEach((v,i)=>{let x=pad+(vals.length===1?(w-2*pad)/2:i*(w-2*pad)/(vals.length-1)),y=h-pad-((v-min+(max===min?0:(max-min)*.08))/(max-min||1))*(h-2*pad);ctx.beginPath();ctx.arc(x,y,3*ratio,0,Math.PI*2);ctx.fill()})}
+
+function renderProgress(){chart('exitChart','exit');chart('batChart','bat');chart('sprintChart','sixty');let hist=k=>logs.filter(l=>l[k]!==''&&l[k]!=null).map(l=>`${esc(l.date)}: ${esc(l[k])}`).join(' · ')||'No measurements yet.';$('exitHistory').textContent=hist('exit');$('batHistory').textContent=hist('bat');$('sprintHistory').textContent=hist('sixty');$('allLogs').innerHTML=logs.slice().reverse().map(l=>`<div class="item"><strong>${esc(l.date)} — ${esc(l.type)}</strong><p class="sub">Exit: ${esc(l.exit||'—')} · Bat: ${esc(l.bat||'—')} · Throw: ${esc(l.throwing||'—')} · 60 yd: ${esc(l.sixty||'—')}</p><p>${esc(l.details)} ${esc(l.notes)}</p><button class="smallbtn" onclick="deleteLog(${l.id})">Delete</button></div>`).join('')||'<p class="sub">No saved workouts.</p>'}function deleteLog(id){logs=logs.filter(l=>l.id!==id);localStorage.setItem('diamondLogs',JSON.stringify(logs));renderProgress();renderHome()}
+
+function exportData(){let blob=new Blob([JSON.stringify({logs,plans,schedule,exerciseLogs,bodyWeights,monthlyGoals},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='diamond-os-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!confirm('Import backup and replace current saved workouts and plans? Export current data first if you need it.'))return;logs=x.logs||[];plans=x.plans||[];schedule=x.schedule||{};exerciseLogs=x.exerciseLogs||[];bodyWeights=x.bodyWeights||[];monthlyGoals=x.monthlyGoals||[];localStorage.setItem('diamondExerciseLogs',JSON.stringify(exerciseLogs));localStorage.setItem('diamondBodyWeights',JSON.stringify(bodyWeights));localStorage.setItem('diamondMonthlyGoals',JSON.stringify(monthlyGoals));localStorage.setItem('diamondLogs',JSON.stringify(logs));localStorage.setItem('diamondPlans',JSON.stringify(plans));saveSchedule();renderHome();renderProgress();alert('Backup imported.')}catch{alert('Could not read that backup file.')}};r.readAsText(f);e.target.value=''}
+
+function addExercise(){let name=$('newExerciseName').value.trim();if(!name){alert('Enter an exercise name first.');return}let s=ensureDay(selectedDate);s.exercises.push({id:Date.now(),name,type:$('newExerciseType').value,target:$('newExerciseTarget').value.trim()});saveSchedule();$('newExerciseName').value='';$('newExerciseTarget').value='';renderExerciseList();renderCalendar()}
+
+function renderExerciseList(){let s=ensureDay(selectedDate),list=s.exercises||[];$('exerciseList').innerHTML=list.map(ex=>{let recent=exerciseLogs.filter(x=>x.name===ex.name).slice(-1)[0];let fields=ex.type==='time'?'<label>Timed hold (seconds)</label><div class="row"><input id="val-'+ex.id+'" type="number" min="0" step="0.1" placeholder="e.g. 30"><button class="smallbtn" id="timer-'+ex.id+'" onclick="toggleExerciseTimer('+ex.id+')">Start timer</button></div><div class="sub" id="clock-'+ex.id+'">00:00.0</div>':ex.type==='distance'?'<label>Distance</label><input id="val-'+ex.id+'" type="number" min="0" step="0.1" placeholder="Distance">':ex.type==='reps'?'<label>Reps completed</label><input id="val-'+ex.id+'" type="number" min="0" placeholder="Reps">':ex.type==='speed'?'<label>Time (seconds)</label><input id="val-'+ex.id+'" type="number" min="0" step="0.01" placeholder="e.g. 6.8">':ex.type==='weight-time'?'<div class="two"><div><label>Weight (lb)</label><input id="weight-'+ex.id+'" type="number" min="0" step="0.5"></div><div><label>Hold time (sec)</label><input id="val-'+ex.id+'" type="number" min="0" step="0.1"></div></div>':'<div class="two"><div><label>Weight (lb)</label><input id="weight-'+ex.id+'" type="number" min="0" step="0.5" placeholder="Weight"></div><div><label>Reps</label><input id="val-'+ex.id+'" type="number" min="0" placeholder="Reps"></div></div>';return `<div class="exercise"><div class="row"><div><strong>${esc(ex.name)}</strong><p>${esc(ex.target||ex.type.replace('-',' + '))}${recent?' · Last: '+esc(recent.value)+(recent.unit?' '+esc(recent.unit):''):''}</p></div><button class="smallbtn" onclick="removeExercise(${ex.id})">Remove</button></div>${fields}<button class="smallbtn" onclick="logExercise(${ex.id})">Save result</button></div>`}).join('')||'<p class="sub">No exercises yet. Add the exercises you want to track for this day.</p>'}
+function removeExercise(id){let s=ensureDay(selectedDate);s.exercises=s.exercises.filter(e=>e.id!==id);saveSchedule();renderExerciseList()}
+
+function toggleExerciseTimer(id){let t=exerciseTimers[id];if(t&&t.running){t.elapsed+=(Date.now()-t.startedAt);t.running=false;clearInterval(t.interval);let seconds=t.elapsed/1000;$('val-'+id).value=seconds.toFixed(1);$('timer-'+id).textContent='Resume timer';$('clock-'+id).textContent=seconds.toFixed(1)+' sec';return}if(!t)t=exerciseTimers[id]={elapsed:0,running:false};t.startedAt=Date.now();t.running=true;$('timer-'+id).textContent='Stop timer';t.interval=setInterval(()=>{let seconds=(t.elapsed+Date.now()-t.startedAt)/1000;let el=$('clock-'+id);if(el)el.textContent=seconds.toFixed(1)+' sec';let input=$('val-'+id);if(input)input.value=seconds.toFixed(1)},100); }
+
+function logExercise(id){let ex=ensureDay(selectedDate).exercises.find(e=>e.id===id);if(!ex)return;let val=$('val-'+id).value,weight=$('weight-'+id)?$('weight-'+id).value:'';if(val===''&&weight===''){alert('Enter a result first.');return}let unit=ex.type==='time'?'sec':ex.type==='speed'?'sec':ex.type==='distance'?'distance':ex.type==='reps'?'reps':ex.type==='weight-time'?'sec':'reps';let rec={id:Date.now(),date:selectedDate,name:ex.name,type:ex.type,value:Number(val||0),weight:weight===''?null:Number(weight),unit,target:ex.target};exerciseLogs.push(rec);localStorage.setItem('diamondExerciseLogs',JSON.stringify(exerciseLogs));renderExerciseList();alert('Exercise result saved.');}
+
+function drawGenericChart(id,arr,valueFn){let c=$(id);if(!c)return;let ctx=c.getContext('2d'),ratio=window.devicePixelRatio||1,w=c.clientWidth*ratio,h=170*ratio;c.width=w;c.height=h;ctx.clearRect(0,0,w,h);if(!arr.length){ctx.fillStyle='#9ba3b4';ctx.font=`${12*ratio}px sans-serif`;ctx.fillText('Log results to see your trend',10*ratio,30*ratio);return}let vals=arr.map(valueFn),min=Math.min(...vals),max=Math.max(...vals),pad=22*ratio;ctx.strokeStyle='#343945';ctx.beginPath();ctx.moveTo(pad,pad);ctx.lineTo(pad,h-pad);ctx.lineTo(w-pad,h-pad);ctx.stroke();ctx.strokeStyle='#b5f36b';ctx.lineWidth=2*ratio;ctx.beginPath();vals.forEach((v,i)=>{let x=pad+(vals.length===1?(w-2*pad)/2:i*(w-2*pad)/(vals.length-1)),y=h-pad-((v-min+(max===min?0:(max-min)*.08))/(max-min||1))*(h-2*pad);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();ctx.fillStyle='#b5f36b';vals.forEach((v,i)=>{let x=pad+(vals.length===1?(w-2*pad)/2:i*(w-2*pad)/(vals.length-1)),y=h-pad-((v-min+(max===min?0:(max-min)*.08))/(max-min||1))*(h-2*pad);ctx.beginPath();ctx.arc(x,y,3*ratio,0,Math.PI*2);ctx.fill()})}
+
+function renderLiftProgress(){let names=[...new Set([...exerciseLogs.map(x=>x.name),...Object.values(schedule).flatMap(s=>(s.exercises||[]).map(e=>e.name))])].sort(),sel=$('liftExerciseSelect'),old=sel.value;sel.innerHTML=names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')||'<option value="">No exercises yet</option>';if(names.includes(old))sel.value=old;let name=sel.value,range=$('liftRange').value,arr=exerciseLogs.filter(x=>x.name===name).sort((a,b)=>a.date.localeCompare(b.date));let cutoff=new Date();if(range==='month')cutoff.setDate(1);if(range==='6months')cutoff.setMonth(cutoff.getMonth()-6);if(range==='year')cutoff.setFullYear(cutoff.getFullYear()-1);if(range!=='all')arr=arr.filter(x=>new Date(x.date+'T12:00:00')>=cutoff);let last=arr[arr.length-1],vals=arr.map(x=>x.weight!=null?x.weight:x.value).filter(v=>v!=null&&Number.isFinite(Number(v)));$('liftLatest').textContent=last?(last.weight!=null?last.weight+' lb':last.value+' '+last.unit):'—';$('liftBest').textContent=vals.length?Math.max(...vals)+'':'—';drawGenericChart('liftChart',arr,x=>Number(x.weight!=null?x.weight:x.value));$('liftHistory').innerHTML=arr.slice().reverse().map(x=>`<div class="item"><strong>${esc(x.date)} · ${esc(x.name)}</strong><p>${x.weight!=null?esc(x.weight)+' lb · ':''}${esc(x.value)} ${esc(x.unit||'')} ${x.target?'· Target: '+esc(x.target):''}</p></div>`).join('')||'<p class="sub">No results for this exercise in the selected range.</p>'}
+
+function saveMorningWeight(){let value=Number($('morningWeight').value);if(!value||value<=0){alert('Enter a valid body weight.');return}let date=localDate(new Date()),existing=bodyWeights.findIndex(x=>x.date===date);if(existing>=0){bodyWeights[existing]={...bodyWeights[existing],value,notes:bodyWeights[existing].notes||'Morning check-in'};}else{bodyWeights.push({id:Date.now(),date,value,notes:'Morning check-in'});}bodyWeights.sort((a,b)=>a.date.localeCompare(b.date));localStorage.setItem('diamondBodyWeights',JSON.stringify(bodyWeights));renderBodyMini();renderBodyWeight();$('morningWeightStatus').textContent='Saved for today: '+value+' lb. Your body-weight graph has been updated.';renderHome();}
+
+function saveBodyWeight(){let value=Number($('bwValue').value);if(!value||value<=0){alert('Enter a valid body weight.');return}bodyWeights.push({id:Date.now(),date:$('bwDate').value||localDate(new Date()),value,notes:$('bwNotes').value});bodyWeights.sort((a,b)=>a.date.localeCompare(b.date));localStorage.setItem('diamondBodyWeights',JSON.stringify(bodyWeights));$('bwValue').value='';$('bwNotes').value='';renderBodyWeight();renderBodyMini();alert('Body weight saved on this device.')}
+
+function renderBodyWeight(){let arr=bodyWeights.slice().sort((a,b)=>a.date.localeCompare(b.date));drawGenericChart('bwChart',arr,x=>x.value);$('bwHistory').innerHTML=arr.slice().reverse().map(x=>`<div class="item"><strong>${esc(x.date)} · ${esc(x.value)} lb</strong>${x.notes?'<p>'+esc(x.notes)+'</p>':''}</div>`).join('')||'<p class="sub">No body-weight entries yet.</p>'}
+
+function renderBodyMini(){let latest=bodyWeights.slice().sort((a,b)=>a.date.localeCompare(b.date)).slice(-1)[0];if($('latestBodyWeight'))$('latestBodyWeight').textContent=latest?latest.value:'—';drawGenericChart('bodyMiniChart',bodyWeights.slice().sort((a,b)=>a.date.localeCompare(b.date)),x=>x.value)}
+
+function saveGoal(){let name=$('goalName').value.trim(),target=Number($('goalTarget').value),month=$('goalMonth').value||localDate(new Date()).slice(0,7);if(!name||!Number.isFinite(target)){alert('Enter a goal name and target.');return}monthlyGoals.push({id:Date.now(),month,name,target,unit:$('goalUnit').value,category:$('goalCategory').value});localStorage.setItem('diamondMonthlyGoals',JSON.stringify(monthlyGoals));$('goalName').value='';$('goalTarget').value='';renderGoals();renderGoalDashboard();alert('Monthly goal added.')}
+
+function renderGoals(){let month=$('goalMonth')?.value||localDate(new Date()).slice(0,7),arr=monthlyGoals.filter(g=>g.month===month);$('goalList').innerHTML=arr.map(g=>`<div class="item"><div class="row"><div><strong>${esc(g.name)}</strong><p class="sub">${esc(g.category)} · Target: ${esc(g.target)} ${esc(g.unit)}</p></div><button class="smallbtn" onclick="deleteGoal(${g.id})">Delete</button></div></div>`).join('')||'<p class="sub">No goals for this month yet.</p>';renderGoalDashboard()}
+
+function deleteGoal(id){monthlyGoals=monthlyGoals.filter(g=>g.id!==id);localStorage.setItem('diamondMonthlyGoals',JSON.stringify(monthlyGoals));renderGoals();renderGoalDashboard()}
+
+function renderGoalDashboard(){let month=localDate(new Date()).slice(0,7),arr=monthlyGoals.filter(g=>g.month===month);if(!$('goalDashboard'))return;$('goalDashboard').innerHTML=arr.map(g=>`<div class="item"><strong>${esc(g.name)}</strong><p class="sub">Target: ${esc(g.target)} ${esc(g.unit)} · ${esc(g.category)}</p></div>`).join('')||'<p class="sub">No goals set for this month yet. Add goals to keep your focus visible.</p>'}
+
+// Initialize the current week and month with editable starter sessions.
+
+for(let i=-((now.getDay()+6)%7);i<7-((now.getDay()+6)%7);i++){let d=new Date(now);d.setDate(now.getDate()+i);ensureDay(localDate(d))}saveSchedule();$('logDate').value=localDate(now);$('bwDate').value=localDate(now);$('goalMonth').value=localDate(now).slice(0,7);$('goalMonth').addEventListener('change',renderGoals);renderHome();renderGoals();
+
+</script></body></html>
